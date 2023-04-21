@@ -5,6 +5,26 @@
 #include <string.h>
 #include "kiss.h"
 
+void
+pkg_print(char *pkg, struct env *e) {
+    char *p = concat(e->sys_db, "/", pkg, "/version", NULL);
+    char *buf = NULL;
+    size_t bufn = 0;
+    FILE *f = fopen(p, "r");
+    if (f == NULL) {
+        die2(pkg, "not found");
+    }
+
+    if (getline(&buf, &bufn, f) == -1) die_perror("getline");
+    char *sp = strchr(buf, ' ');
+    if (sp) *sp = '-';
+
+    printf("%s %s", pkg, buf);
+
+    free(p);
+    fclose(f);
+}
+
 int
 list(int argc, char **argv, struct env *e) {
     struct dirent *dp;
@@ -25,25 +45,14 @@ list(int argc, char **argv, struct env *e) {
             }
             if (dp->d_name[0] == '.')
                 continue;
-
-            char *p = concat(e->sys_db, "/", dp->d_name, "/version", NULL);
-
-            char *buf = NULL;
-            size_t bufn = 0;
-            FILE *f = fopen(p, "r");
-            if (f == NULL) die_perror(p);
-
-            if (getline(&buf, &bufn, f) == -1) die_perror("getline");
-            char *sp = strchr(buf, ' ');
-            if (sp) *sp = '-';
-
-            printf("%s %s", dp->d_name, buf);
-
-            free(p);
-            fclose(f);
+            pkg_print(dp->d_name, e);
         } while (dp != NULL);
 done:
         closedir(d);
+    } else {
+        for (int i = 1; i < argc; i++) {
+            pkg_print(argv[i], e);
+        }
     }
     return 0;
 }

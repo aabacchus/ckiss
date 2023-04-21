@@ -6,7 +6,7 @@ char *c1, *c2, *c3;
 noreturn void
 usage(int r) {
     mylog("kiss [l] [pkg]...");
-    mylog("list    List installed packages");
+    mylog("list         List installed packages");
     exit(r);
 }
 
