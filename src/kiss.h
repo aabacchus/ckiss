@@ -7,6 +7,8 @@
 #define noreturn
 #endif
 
+#define KISS_VERSION "0 (compat 5.6.4)"
+
 struct cmd {
     char **args;
 };

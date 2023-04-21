@@ -14,5 +14,5 @@ An implementation of the kiss package manager in C.
 [.] search
 [ ] update
 [ ] upgrade
-[ ] version
+[x] version
 [ ] external tools

@@ -1,11 +1,13 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "kiss.h"
 
 noreturn void
 usage(int r) {
-    mylog("kiss [l|s] [pkg]...");
+    mylog("kiss [l|s|v] [pkg]...");
     mylog("list         List installed packages");
     mylog("search       Search for packages");
+    mylog("version      Package manager version");
     exit(r);
 }
 
@@ -22,6 +24,9 @@ main(int argc, char **argv) {
             break;
         case 's':
             search(argc - 1, argv + 1, e);
+            break;
+        case 'v':
+            printf("%s\n", KISS_VERSION);
             break;
         default:
             /* TODO: external tools */
