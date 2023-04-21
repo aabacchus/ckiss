@@ -5,8 +5,9 @@ char *c1, *c2, *c3;
 
 noreturn void
 usage(int r) {
-    mylog("kiss [l] [pkg]...");
+    mylog("kiss [l|s] [pkg]...");
     mylog("list         List installed packages");
+    mylog("search       Search for packages");
     exit(r);
 }
 
@@ -33,6 +34,9 @@ main(int argc, char **argv) {
     switch (argv[1][0]) {
         case 'l':
             list(argc - 1, argv + 1, e);
+            break;
+        case 's':
+            search(argc - 1, argv + 1, e);
             break;
         default:
             /* TODO: external tools */

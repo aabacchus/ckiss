@@ -120,31 +120,54 @@ split(char *s, char *sep) {
     return res;
 }
 
-char *
-find_in_path(char *name, char **path) {
+char **
+find_in_path(char *name, char **path, bool limit) {
+    char **s = NULL, **tmp;
+    int n = 0;
     for (int i = 0; path[i] != NULL; i++) {
         char *file = concat(path[i], "/", name, NULL);
         if (access(file, R_OK) == 0) {
-            return file;
+            tmp = realloc(s, sizeof(char *) * ++n);
+            if (tmp == NULL) {
+                free(file);
+                free(s);
+                die_perror("realloc");
+            }
+            s = tmp;
+            s[n - 1] = file;
+            if (limit)
+                return s;
+        } else {
+            free(file);
         }
-        free(file);
     }
-    return NULL;
+    if (s != NULL) {
+        /* add terminating NULL */
+        tmp = realloc(s, sizeof(char *) * (n+1));
+        if (tmp == NULL) {
+            free(s);
+            die_perror("realloc");
+        }
+        s = tmp;
+        s[n] = NULL;
+    }
+    return s;
 }
 
 int
 available_cmd(char **path, char *cmd, ...) {
-    char *s;
     va_list ap;
     int n = 0;
     va_start(ap, cmd);
     while (cmd != NULL) {
-        s = find_in_path(cmd, path);
+        char **s = find_in_path(cmd, path, true);
         if (s != NULL) {
+            free(*s);
             free(s);
             va_end(ap);
             return n;
         }
+        free(*s);
         free(s);
         n++;
         cmd = va_arg(ap, char *);

@@ -2,7 +2,7 @@
 
 XCFLAGS = $(CFLAGS) -Wall -Wextra -Wshadow -pedantic -D_XOPEN_SOURCE=700 -Og -g
 
-OBJS = main.o list.o
+OBJS = main.o list.o search.o
 
 all: kiss
 
@@ -29,4 +29,5 @@ clean:
 libkiss.o: kiss.h
 test.o: kiss.h
 list.o: kiss.h
+search.o: kiss.h
 main.o: kiss.h

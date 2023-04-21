@@ -56,8 +56,9 @@ char **split(char *s, char *sep);
 
 /* Goes through the path array looking for a file in each directory with the
  * given name. Returns the first one. The returned string must be freed by the
- * caller. */
-char *find_in_path(char *name, char **path);
+ * caller. If limit is true, only return the first result found in path,
+ * otherwise return an array of all results found in path. */
+char **find_in_path(char *name, char **path, bool limit);
 
 /* Checks for the first cmd which may be found in path. Returns the index of the
  * cmd (0, 1, 2, ...). Arg list must be terminated with a NULL */
@@ -71,3 +72,4 @@ void destroy_env(struct env *e);
 
 
 int list(int argc, char **argv, struct env *e);
+int search(int argc, char **argv, struct env *e);

@@ -11,7 +11,7 @@ An implementation of the kiss package manager in C.
 [ ] install
 [x] list
 [ ] remove
-[ ] search
+[.] search
 [ ] update
 [ ] upgrade
 [ ] version
