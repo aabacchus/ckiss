@@ -4,13 +4,15 @@
 
 int
 search(int argc, char **argv, struct env *e) {
-    char **s = find_in_path(argv[1], e->kiss_path, false);
-    if (s == NULL)
-        die2(argv[1], "not found");
-    for (int i = 0; s[i] != NULL; i++) {
-        printf("%s\n", s[i]);
-        free(s[i]);
+    for (int i = 1; i < argc; i++) {
+        char **s = find_in_path(argv[i], e->kiss_path, false);
+        if (s == NULL)
+            die2(argv[i], "not found");
+        for (int j = 0; s[j] != NULL; j++) {
+            printf("%s\n", s[j]);
+            free(s[j]);
+        }
+        free(s);
     }
-    free(s);
     return 0;
 }
