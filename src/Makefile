@@ -2,15 +2,15 @@
 
 XCFLAGS = $(CFLAGS) -Wall -Wextra -Wshadow -pedantic -D_XOPEN_SOURCE=700 -Og -g
 
-OBJS = main.o list.o search.o
+OBJS = utils.o list.o search.o
 
 all: kiss
 
-kiss: $(OBJS) libkiss.a
-	$(CC) $(LDFLAGS) $(OBJS) libkiss.a -o $@
+kiss: main.o libkiss.a
+	$(CC) $(LDFLAGS) main.o libkiss.a -o $@
 
-libkiss.a: libkiss.o
-	$(AR) -rcs $@ libkiss.o
+libkiss.a: $(OBJS)
+	$(AR) -rcs $@ $(OBJS)
 
 .c.o:
 	$(CC) $(XCFLAGS) -c $< -o $@
@@ -22,11 +22,11 @@ kiss-test: test.o libkiss.a
 	$(CC) $(LDFLAGS) test.o libkiss.a -o $@
 
 clean:
-	rm -f libkiss.a libkiss.o test.o test $(OBJS) kiss kiss-test
+	rm -f libkiss.a test.o test $(OBJS) main.o kiss kiss-test
 
 .PHONY: clean test all
 
-libkiss.o: kiss.h
+utils.o: kiss.h
 test.o: kiss.h
 list.o: kiss.h
 search.o: kiss.h

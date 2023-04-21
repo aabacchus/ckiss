@@ -7,6 +7,8 @@
 
 #include "kiss.h"
 
+static char *c1 = "", *c2 = "", *c3 = "";
+
 void
 mylog(const char *s) {
     fprintf(stderr, "%s-> %s%s\n", c1, c3, s);
@@ -167,13 +169,24 @@ available_cmd(char **path, char *cmd, ...) {
             va_end(ap);
             return n;
         }
-        free(*s);
-        free(s);
         n++;
         cmd = va_arg(ap, char *);
     }
     va_end(ap);
     return -1;
+}
+
+void
+setup_colors(struct env *e) {
+    if (!isatty(1) || e->color == 0) {
+        c1 = "";
+        c2 = "";
+        c3 = "";
+    } else {
+        c1 = "\033[1;33m";
+        c2 = "\033[1;34m";
+        c3 = "\033[m";
+    }
 }
 
 struct env *

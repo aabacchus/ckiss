@@ -1,27 +1,12 @@
 #include <stdlib.h>
 #include "kiss.h"
 
-char *c1, *c2, *c3;
-
 noreturn void
 usage(int r) {
     mylog("kiss [l|s] [pkg]...");
     mylog("list         List installed packages");
     mylog("search       Search for packages");
     exit(r);
-}
-
-void
-setup_colors(struct env *e) {
-    if (!isatty(1) || e->color == 0) {
-        c1 = "";
-        c2 = "";
-        c3 = "";
-    } else {
-        c1 = "\033[1;33m";
-        c2 = "\033[1;34m";
-        c3 = "\033[m";
-    }
 }
 
 int

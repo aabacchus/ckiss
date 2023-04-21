@@ -33,9 +33,6 @@ struct env {
     char	date[17]; /* YYYY-MM-DD-HH:MM + '\0' */
 };
 
-/* colours */
-extern char *c1, *c2, *c3;
-
 /* called "mylog" to avoid collision with math.h log function. */
 void mylog(const char *s);
 void mylog2(const char *name, const char *s);
@@ -63,6 +60,9 @@ char **find_in_path(char *name, char **path, bool limit);
 /* Checks for the first cmd which may be found in path. Returns the index of the
  * cmd (0, 1, 2, ...). Arg list must be terminated with a NULL */
 int available_cmd(char **path, char *cmd, ...);
+
+/* setup internal colours used by the logging functions. */
+void setup_colors(struct env *e);
 
 /* parses environment variables to initialise a struct env. */
 struct env *setup_env(void);
