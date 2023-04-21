@@ -28,6 +28,39 @@ die_perror(const char *s) {
     exit(1);
 }
 
+char *
+concat(char *s, ...) {
+    char *c, *tmp;
+    size_t len = 0;
+    va_list ap;
+
+    /* find total length of string */
+    va_start(ap, s);
+    tmp = s;
+    while (tmp != NULL) {
+        len += strlen(tmp);
+        tmp = va_arg(ap, char *);
+    }
+    len += 1; /* terminating NUL */
+    va_end(ap);
+
+    c = calloc(len, sizeof(char));
+    if (c == NULL) die_perror("calloc");
+
+    /* now concatenate */
+    va_start(ap, s);
+    tmp = s;
+    strcpy(c, tmp);
+    tmp = va_arg(ap, char *);
+    while (tmp != NULL) {
+        strcat(c, tmp);
+        tmp = va_arg(ap, char *);
+    }
+    va_end(ap);
+    c[len-1] = '\0';
+    return c;
+}
+
 char **
 split(char *s, char *sep) {
     if (s == NULL)
@@ -63,10 +96,7 @@ split(char *s, char *sep) {
 char *
 find_in_path(char *name, char **path) {
     for (int i = 0; path[i] != NULL; i++) {
-        char *file = calloc(strlen(path[i]) + strlen(name) + 2, 1);
-        strcpy(file, path[i]);
-        strcat(file, "/");
-        strcat(file, name);
+        char *file = concat(path[i], "/", name, NULL);
         if (access(file, R_OK) == 0) {
             return file;
         }
@@ -81,7 +111,7 @@ available_cmd(char **path, char *cmd, ...) {
     va_list ap;
     int n = 0;
     va_start(ap, cmd);
-    while (cmd != 0) {
+    while (cmd != NULL) {
         s = find_in_path(cmd, path);
         if (s != NULL) {
             free(s);
@@ -151,7 +181,7 @@ setup_env(void) {
         snprintf(e->pid, n, "%d", p);
     }
 
-    switch (available_cmd(e->path, "b3sum", 0)) {
+    switch (available_cmd(e->path, "b3sum", NULL)) {
         case 0:
             e->b3[0] = "b3sum";
             e->b3[1] = "-l";
@@ -165,7 +195,7 @@ setup_env(void) {
     t = getenv("KISS_COMPRESS");
     e->compress = (t && *t != '\0') ? t : "gz";
 
-    switch (available_cmd(e->path, "aria2c", "axel", "curl", "wget", "wget2", 0)) {
+    switch (available_cmd(e->path, "aria2c", "axel", "curl", "wget", "wget2", NULL)) {
         case 0:
             e->get[0] = "aria2c";
             e->get[1] = "-d";
@@ -203,7 +233,7 @@ setup_env(void) {
     if (t && *t != '\0') {
         e->su = t;
     } else {
-        switch (available_cmd(e->path, "ssu", "sudo", "doas", "su", 0)) {
+        switch (available_cmd(e->path, "ssu", "sudo", "doas", "su", NULL)) {
             case 0:
                 e->su = "ssu";
                 break;
@@ -225,7 +255,7 @@ setup_env(void) {
     if (t && *t != '\0') {
         e->elf = t;
     } else {
-        switch (available_cmd(e->path, "readelf", "eu-readelf", "llvm-readelf", "ldd", 0)) {
+        switch (available_cmd(e->path, "readelf", "eu-readelf", "llvm-readelf", "ldd", NULL)) {
             case 0:
                 e->elf = "readelf";
                 break;
