@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,23 +9,49 @@
 
 void
 mylog(const char *s) {
-    fprintf(stderr, "-> %s\n", s);
+    fprintf(stderr, "%s-> %s%s\n", c1, c3, s);
+}
+
+void
+mylog2(const char *name, const char *s) {
+    fprintf(stderr, "%s-> %s%s%s %s\n", c1, c2, name, c3, s);
 }
 
 void
 warn(const char *s) {
-    fprintf(stderr, "WARNING %s\n", s);
+    fprintf(stderr, "%sWARNING %s%s\n", c1, c3, s);
+}
+
+void
+warn2(const char *name, const char *s) {
+    fprintf(stderr, "%sWARNING %s%s%s %s\n", c1, c2, name, c3, s);
 }
 
 void
 die(const char *s) {
-    mylog(s);
+    fprintf(stderr, "%sERROR %s%s\n", c1, c3, s);
+    exit(1);
+}
+
+void
+mylog_v(char *format, ...) {
+    va_list ap;
+    va_start(ap, format);
+    fprintf(stderr, "%s-> %s", c1, c3);
+    vfprintf(stderr, format, ap);
+    fprintf(stderr, "\n");
+    va_end(ap);
+}
+
+void
+die2(const char *name, const char *s) {
+    fprintf(stderr, "%sERROR %s%s%s %s\n", c1, c2, name, c3, s);
     exit(1);
 }
 
 void
 die_perror(const char *s) {
-    perror(s);
+    die2(s, strerror(errno));
     exit(1);
 }
 

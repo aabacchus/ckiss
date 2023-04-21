@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "kiss.h"
 
+char *c1, *c2, *c3;
+
 noreturn void
 usage(int r) {
     mylog("kiss [l] [pkg]...");
@@ -8,11 +10,26 @@ usage(int r) {
     exit(r);
 }
 
+void
+setup_colors(struct env *e) {
+    if (!isatty(1) || e->color == 0) {
+        c1 = "";
+        c2 = "";
+        c3 = "";
+    } else {
+        c1 = "\033[1;33m";
+        c2 = "\033[1;34m";
+        c3 = "\033[m";
+    }
+}
+
 int
 main(int argc, char **argv) {
+    struct env *e = setup_env();
+    setup_colors(e);
+
     if (argc < 2) usage(0);
 
-    struct env *e = setup_env();
     switch (argv[1][0]) {
         case 'l':
             list(argc - 1, argv + 1, e);

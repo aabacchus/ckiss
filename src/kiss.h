@@ -33,10 +33,17 @@ struct env {
     char	date[17]; /* YYYY-MM-DD-HH:MM + '\0' */
 };
 
+/* colours */
+extern char *c1, *c2, *c3;
+
 /* called "mylog" to avoid collision with math.h log function. */
 void mylog(const char *s);
+void mylog2(const char *name, const char *s);
+void mylog_v(char *format, ...);
 void warn(const char *s);
+void warn2(const char *name, const char *s);
 noreturn void die(const char *s);
+noreturn void die2(const char *name, const char *s);
 noreturn void die_perror(const char *s);
 
 /* returns a string containing the concatenation of all args. Args must be
