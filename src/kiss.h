@@ -1,6 +1,11 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <stdnoreturn.h>
+
+#ifndef noreturn
+#define noreturn
+#endif
 
 struct cmd {
     char **args;
@@ -23,6 +28,7 @@ struct env {
     char	*pwd;
     char	*root;
     char	*su;
+    char	*sys_db;
     char	*tmpdir;
     char	date[17]; /* YYYY-MM-DD-HH:MM + '\0' */
 };
@@ -30,8 +36,8 @@ struct env {
 /* called "mylog" to avoid collision with math.h log function. */
 void mylog(const char *s);
 void warn(const char *s);
-void die(const char *s);
-void die_perror(const char *s);
+noreturn void die(const char *s);
+noreturn void die_perror(const char *s);
 
 /* returns a string containing the concatenation of all args. Args must be
  * terminated with a NULL. Returned string must be freed by caller.*/
@@ -55,3 +61,6 @@ struct env *setup_env(void);
 
 /* correctly frees a struct env. */
 void destroy_env(struct env *e);
+
+
+int list(int argc, char **argv, struct env *e);

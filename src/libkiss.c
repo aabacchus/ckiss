@@ -160,7 +160,10 @@ setup_env(void) {
     if (t == NULL) die("PWD is not set");
     e->pwd = t;
 
-    e->root = getenv("KISS_ROOT");
+    t = getenv("KISS_ROOT");
+    e->root = t ? t : "";
+
+    e->sys_db = concat(e->root, "/var/db/kiss/installed", NULL);
 
     time_t dt = time(NULL);
     struct tm *tm = localtime(&dt);
@@ -291,6 +294,7 @@ destroy_env(struct env *e) {
         free(e->path[i]);
     free(e->path);
 
+    free(e->sys_db);
     free(e->pid);
     free(e);
 }
