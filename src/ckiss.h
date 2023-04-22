@@ -1,3 +1,6 @@
+#ifndef _CKISS_H
+#define _CKISS_H
+
 #include <limits.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -89,3 +92,5 @@ void destroy_env(struct env *e);
 
 int list(int argc, char **argv, struct env *e);
 int search(int argc, char **argv, struct env *e);
+
+#endif
