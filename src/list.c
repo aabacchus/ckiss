@@ -26,30 +26,27 @@ pkg_print(char *pkg, struct env *e) {
     fclose(f);
 }
 
+/* exclude .* from package listing */
+static int
+sel(const struct dirent *d) {
+    return d->d_name[0] != '.';
+}
+
 int
 list(int argc, char **argv, struct env *e) {
-    struct dirent *dp;
-
     if (argc == 1) {
-        DIR *d = opendir(e->sys_db);
-        if (d == NULL) die_perror(e->sys_db);
-        do {
-            errno = 0;
-            dp = readdir(d);
-            if (dp == NULL) {
-                if (errno == 0) {
-                    /* end of dir */
-                    goto done;
-                }
-                closedir(d);
-                die_perror("readdir");
-            }
-            if (dp->d_name[0] == '.')
-                continue;
-            pkg_print(dp->d_name, e);
-        } while (dp != NULL);
-done:
-        closedir(d);
+        struct dirent **namelist;
+        int n = scandir(e->sys_db, &namelist, sel, alphasort);
+        if (n == -1)
+            die_perror("scandir");
+
+        for (int i = 0; i < n; i++) {
+            pkg_print(namelist[i]->d_name, e);
+            free(namelist[i]);
+        }
+
+        free(namelist);
+        return 0;
     } else {
         for (int i = 1; i < argc; i++) {
             pkg_print(argv[i], e);
