@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "kiss.h"
+#include "ckiss.h"
 
 noreturn void
 usage(int r) {
-    mylog("kiss [l|s|v] [pkg]...");
+    mylog("ckiss [l|s|v] [pkg]...");
     mylog("list         List installed packages");
     mylog("search       Search for packages");
     mylog("version      Package manager version");

@@ -1,4 +1,7 @@
+# CKISS
+
 An implementation of the kiss package manager in C.
+
 
 [.] = partially implemented
 [x] = fully implemented

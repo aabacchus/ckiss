@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "kiss.h"
+#include "ckiss.h"
 
 void
 pkg_print(char *pkg, struct env *e) {

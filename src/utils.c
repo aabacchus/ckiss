@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#include "kiss.h"
+#include "ckiss.h"
 
 static char *c1 = "", *c2 = "", *c3 = "";
 

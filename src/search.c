@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "kiss.h"
+#include "ckiss.h"
 
 /* TODO: append sys_db to kiss_path */
 int

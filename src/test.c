@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "kiss.h"
+#include "ckiss.h"
 
 int
 main(int argc, char **argv) {
