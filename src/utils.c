@@ -92,18 +92,22 @@ concat(char *s, ...) {
     return c;
 }
 
+size_t
+arr_len(char **arr) {
+    size_t n = 0;
+    if (arr) {
+        while (*arr != NULL) {
+            arr++;
+            n++;
+        }
+    }
+    return n;
+}
+
 char **
 append_to_array(char ***arr, char *s, int n, bool dup) {
     if (n < 0) {
-        /* need to walk it to find out how many existing entries. */
-        n = 0;
-        if (*arr) {
-            char **t = *arr;
-            while (*t != NULL) {
-                t++;
-                n++;
-            }
-        }
+        n = arr_len(*arr);
     }
     char **tmp = realloc(*arr, sizeof(char *) * ++n);
     if (tmp == NULL) {
@@ -113,6 +117,18 @@ append_to_array(char ***arr, char *s, int n, bool dup) {
     *arr = tmp;
     (*arr)[n - 1] = dup ? strdup(s) : s;
     return *arr;
+}
+
+char **
+arr_copy(char **arr) {
+    size_t n = arr_len(arr);
+    char **s = malloc(sizeof(char *) * (n + 1));
+    if (s == NULL)
+        die_perror("malloc");
+    for (size_t i = 0; i < n; i++)
+        s[i] = strdup(arr[i]);
+    s[n] = NULL;
+    return s;
 }
 
 char **

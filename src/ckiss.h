@@ -50,10 +50,16 @@ noreturn void die_perror(const char *s);
  * terminated with a NULL. Returned string must be freed by caller.*/
 char *concat(char *s, ...);
 
+/* Walk an array to find its length, excluding the terminating NULL record. */
+size_t arr_len(char **arr);
+
 /* Appends to *arr (allocs if NULL). If you don't know the length of arr but it
  * has a terminating NULL, supply an n < 0. If s should be strdup'd then set dup
  * to true. */
 char **append_to_array(char ***arr, char *s, int n, bool dup);
+
+/* Make a deep copy of an array. */
+char ** arr_copy(char **arr);
 
 /* splits s by any delimiters in sep into an array of strings. Each string and
  * the array must be freed by the caller. */
