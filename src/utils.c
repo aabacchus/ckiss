@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#include "array.h"
 #include "ckiss.h"
 
 static char *c1 = "", *c2 = "", *c3 = "";
@@ -92,74 +93,15 @@ concat(char *s, ...) {
     return c;
 }
 
-size_t
-arr_len(char **arr) {
-    size_t n = 0;
-    if (arr) {
-        while (*arr != NULL) {
-            arr++;
-            n++;
-        }
-    }
-    return n;
-}
-
-char **
-append_to_array(char ***arr, char *s, int n, bool dup) {
-    if (n < 0) {
-        n = arr_len(*arr);
-    }
-    char **tmp = realloc(*arr, sizeof(char *) * ++n);
-    if (tmp == NULL) {
-        free(*arr);
-        die_perror("realloc");
-    }
-    *arr = tmp;
-    (*arr)[n - 1] = dup ? strdup(s) : s;
-    return *arr;
-}
-
-char **
-arr_copy(char **arr) {
-    size_t n = arr_len(arr);
-    char **s = malloc(sizeof(char *) * (n + 1));
-    if (s == NULL)
-        die_perror("malloc");
-    for (size_t i = 0; i < n; i++)
-        s[i] = strdup(arr[i]);
-    s[n] = NULL;
-    return s;
-}
-
-char **
-split(char *s, char *sep) {
-    if (s == NULL)
-        return NULL;
-
-    char **res = NULL;
-    char *p = strtok(s, sep);
-    int n = 0;
-
-    while (p) {
-        append_to_array(&res, p, n++, true);
-        p = strtok(NULL, sep);
-    }
-
-    /* add a NULL terminator */
-    append_to_array(&res, NULL, n, false);
-
-    return res;
-}
-
-char **
-find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob) {
-    char **s = NULL;
+array_t
+find_in_path(char *name, array_t path, mode_t test_flags, bool limit, bool isglob) {
+    array_t s = NULL;
     int n = 0;
     if (path == NULL || name == NULL)
 	    return s;
     for (int i = 0; path[i] != NULL; i++) {
         char *file = concat(path[i], "/", name, NULL);
-        char **list = NULL;
+        array_t list = NULL;
         if (isglob) {
             glob_t pglob;
             int r = glob(file, GLOB_ERR, NULL, &pglob);
@@ -191,10 +133,10 @@ find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob
                 free(list[j]);
             } else {
                 char *found = list[j];
-                append_to_array(&s, found, n++, false);
+                arr_append(&s, found, n++, false);
                 if (limit) {
                     free(list);
-                    append_to_array(&s, NULL, n, false);
+                    arr_append(&s, NULL, n, false);
                     return s;
                 }
             }
@@ -203,18 +145,18 @@ find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob
     }
     if (s != NULL) {
         /* add terminating NULL */
-        append_to_array(&s, NULL, n, false);
+        arr_append(&s, NULL, n, false);
     }
     return s;
 }
 
 int
-available_cmd(char **path, char *cmd, ...) {
+available_cmd(array_t path, char *cmd, ...) {
     va_list ap;
     int n = 0;
     va_start(ap, cmd);
     while (cmd != NULL) {
-        char **s = find_in_path(cmd, path, S_IXUSR | S_IXGRP | S_IXOTH, true, false);
+        array_t s = find_in_path(cmd, path, S_IXUSR | S_IXGRP | S_IXOTH, true, false);
         if (s != NULL) {
             free(*s);
             free(s);

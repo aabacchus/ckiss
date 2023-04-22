@@ -7,15 +7,13 @@
 #include <stdnoreturn.h>
 #include <sys/stat.h>
 
+#include "array.h"
+
 #ifndef noreturn
 #define noreturn
 #endif
 
 #define KISS_VERSION "0.1.0 (compat 5.6.4)"
-
-struct cmd {
-    char **args;
-};
 
 struct env {
     bool	color;
@@ -53,32 +51,17 @@ noreturn void die_perror(const char *s);
  * terminated with a NULL. Returned string must be freed by caller.*/
 char *concat(char *s, ...);
 
-/* Walk an array to find its length, excluding the terminating NULL record. */
-size_t arr_len(char **arr);
-
-/* Appends to *arr (allocs if NULL). If you don't know the length of arr but it
- * has a terminating NULL, supply an n < 0. If s should be strdup'd then set dup
- * to true. */
-char **append_to_array(char ***arr, char *s, int n, bool dup);
-
-/* Make a deep copy of an array. */
-char ** arr_copy(char **arr);
-
-/* splits s by any delimiters in sep into an array of strings. Each string and
- * the array must be freed by the caller. */
-char **split(char *s, char *sep);
-
 /* Goes through the path array looking for a file in each directory with the
  * given name. Returns the first one. The returned string must be freed by the
  * caller. If limit is true, only return the first result found in path,
  * otherwise return an array of all results found in path. If isglob is true,
  * treat name as a glob. test_flags is OR'd with the file's mode (from stat(3))
  * to check if it matches a criterion (eg. executable, directory). */
-char **find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob);
+array_t find_in_path(char *name, array_t path, mode_t test_flags, bool limit, bool isglob);
 
 /* Checks for the first cmd which may be found in path. Returns the index of the
  * cmd (0, 1, 2, ...). Arg list must be terminated with a NULL */
-int available_cmd(char **path, char *cmd, ...);
+int available_cmd(array_t path, char *cmd, ...);
 
 /* setup internal colours used by the logging functions. */
 void setup_colors(struct env *e);

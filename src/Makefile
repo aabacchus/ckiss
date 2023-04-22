@@ -2,7 +2,7 @@
 
 XCFLAGS = $(CFLAGS) -Wall -Wextra -Wshadow -pedantic -D_XOPEN_SOURCE=700 -Og -g
 
-OBJS = utils.o list.o search.o
+OBJS = utils.o list.o search.o array.o
 
 all: ckiss
 
@@ -26,8 +26,9 @@ clean:
 
 .PHONY: clean test all
 
-utils.o: ckiss.h
+utils.o: ckiss.h array.h
 test.o: ckiss.h
 list.o: ckiss.h
-search.o: ckiss.h
+search.o: ckiss.h array.h
+array.o: ckiss.h array.h
 main.o: ckiss.h
