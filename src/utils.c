@@ -93,40 +93,51 @@ concat(char *s, ...) {
 }
 
 char **
+append_to_array(char ***arr, char *s, int n, bool dup) {
+    if (n < 0) {
+        /* need to walk it to find out how many existing entries. */
+        n = 0;
+        if (*arr) {
+            char **t = *arr;
+            while (*t != NULL) {
+                t++;
+                n++;
+            }
+        }
+    }
+    char **tmp = realloc(*arr, sizeof(char *) * ++n);
+    if (tmp == NULL) {
+        free(*arr);
+        die_perror("realloc");
+    }
+    *arr = tmp;
+    (*arr)[n - 1] = dup ? strdup(s) : s;
+    return *arr;
+}
+
+char **
 split(char *s, char *sep) {
     if (s == NULL)
         return NULL;
 
-    char **res = NULL, **tmp;
+    char **res = NULL;
     char *p = strtok(s, sep);
     int n = 0;
 
     while (p) {
-        tmp = realloc(res, sizeof(char *) * ++n);
-        if (tmp == NULL) {
-            free(res);
-            die_perror("realloc");
-        }
-        res = tmp;
-        res[n - 1] = strdup(p);
+        append_to_array(&res, p, n++, true);
         p = strtok(NULL, sep);
     }
 
     /* add a NULL terminator */
-    tmp = realloc(res, sizeof(char *) * (n + 1));
-    if (tmp == NULL) {
-        free(res);
-        die_perror("realloc");
-    }
-    res = tmp;
-    res[n] = NULL;
+    append_to_array(&res, NULL, n, false);
 
     return res;
 }
 
 char **
 find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob) {
-    char **s = NULL, **tmp;
+    char **s = NULL;
     int n = 0;
     if (path == NULL || name == NULL)
 	    return s;
@@ -164,17 +175,10 @@ find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob
                 free(list[j]);
             } else {
                 char *found = list[j];
-                tmp = realloc(s, sizeof(char *) * ++n);
-                if (tmp == NULL) {
-                    free(found);
-                    free(s);
-                    free(list);
-                    die_perror("realloc");
-                }
-                s = tmp;
-                s[n - 1] = found;
+                append_to_array(&s, found, n++, false);
                 if (limit) {
                     free(list);
+                    append_to_array(&s, NULL, n, false);
                     return s;
                 }
             }
@@ -183,13 +187,7 @@ find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob
     }
     if (s != NULL) {
         /* add terminating NULL */
-        tmp = realloc(s, sizeof(char *) * (n+1));
-        if (tmp == NULL) {
-            free(s);
-            die_perror("realloc");
-        }
-        s = tmp;
-        s[n] = NULL;
+        append_to_array(&s, NULL, n, false);
     }
     return s;
 }
