@@ -1,8 +1,10 @@
 #include <errno.h>
+#include <glob.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 
 #include "kiss.h"
@@ -123,25 +125,59 @@ split(char *s, char *sep) {
 }
 
 char **
-find_in_path(char *name, char **path, bool limit) {
+find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob) {
     char **s = NULL, **tmp;
     int n = 0;
     for (int i = 0; path[i] != NULL; i++) {
         char *file = concat(path[i], "/", name, NULL);
-        if (access(file, R_OK) == 0) {
-            tmp = realloc(s, sizeof(char *) * ++n);
-            if (tmp == NULL) {
-                free(file);
-                free(s);
-                die_perror("realloc");
-            }
-            s = tmp;
-            s[n - 1] = file;
-            if (limit)
-                return s;
-        } else {
+        char **list = NULL;
+        if (isglob) {
+            glob_t pglob;
+            int r = glob(file, GLOB_ERR, NULL, &pglob);
             free(file);
+            if (r != 0 || pglob.gl_pathc == 0) {
+                if (r != GLOB_NOMATCH)
+                    die_perror("glob");
+                continue;
+            }
+            list = malloc(sizeof(char *) * (pglob.gl_pathc + 1));
+            if (list == NULL) die_perror("malloc");
+            for (size_t j = 0; j < pglob.gl_pathc; j++) {
+                list[j] = strdup(pglob.gl_pathv[j]);
+	    }
+	    list[pglob.gl_pathc] = NULL;
+            globfree(&pglob);
+        } else {
+            /* just put the one file into an array like pglob.gl_pathv so that
+             * the code below can be used for both cases of isglob. */
+            list = malloc(sizeof(char *) * 2);
+            if (list == NULL) die_perror("malloc");
+            list[0] = file;
+            list[1] = NULL;
         }
+
+        for (int j = 0; list[j] != NULL; j++) {
+            struct stat sb;
+            if (stat(list[j], &sb) == -1 || !(sb.st_mode & test_flags)) {
+                free(list[j]);
+            } else {
+                char *found = list[j];
+                tmp = realloc(s, sizeof(char *) * ++n);
+                if (tmp == NULL) {
+                    free(found);
+                    free(s);
+                    free(list);
+                    die_perror("realloc");
+                }
+                s = tmp;
+                s[n - 1] = found;
+                if (limit) {
+                    free(list);
+                    return s;
+                }
+            }
+        }
+        free(list);
     }
     if (s != NULL) {
         /* add terminating NULL */
@@ -162,7 +198,7 @@ available_cmd(char **path, char *cmd, ...) {
     int n = 0;
     va_start(ap, cmd);
     while (cmd != NULL) {
-        char **s = find_in_path(cmd, path, true);
+        char **s = find_in_path(cmd, path, S_IXUSR | S_IXGRP | S_IXOTH, true, false);
         if (s != NULL) {
             free(*s);
             free(s);

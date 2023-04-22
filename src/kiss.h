@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <stdnoreturn.h>
+#include <sys/stat.h>
 
 #ifndef noreturn
 #define noreturn
@@ -56,8 +57,10 @@ char **split(char *s, char *sep);
 /* Goes through the path array looking for a file in each directory with the
  * given name. Returns the first one. The returned string must be freed by the
  * caller. If limit is true, only return the first result found in path,
- * otherwise return an array of all results found in path. */
-char **find_in_path(char *name, char **path, bool limit);
+ * otherwise return an array of all results found in path. If isglob is true,
+ * treat name as a glob. test_flags is OR'd with the file's mode (from stat(3))
+ * to check if it matches a criterion (eg. executable, directory). */
+char **find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob);
 
 /* Checks for the first cmd which may be found in path. Returns the index of the
  * cmd (0, 1, 2, ...). Arg list must be terminated with a NULL */
