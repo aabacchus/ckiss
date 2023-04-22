@@ -128,6 +128,8 @@ char **
 find_in_path(char *name, char **path, mode_t test_flags, bool limit, bool isglob) {
     char **s = NULL, **tmp;
     int n = 0;
+    if (path == NULL || name == NULL)
+	    return s;
     for (int i = 0; path[i] != NULL; i++) {
         char *file = concat(path[i], "/", name, NULL);
         char **list = NULL;
@@ -381,15 +383,15 @@ setup_env(void) {
 
 void
 destroy_env(struct env *e) {
-    for (int i = 0; e->hooks[i] != NULL; i++)
+    for (int i = 0; e->hooks && e->hooks[i] != NULL; i++)
         free(e->hooks[i]);
     free(e->hooks);
 
-    for (int i = 0; e->kiss_path[i] != NULL; i++)
+    for (int i = 0; e->kiss_path && e->kiss_path[i] != NULL; i++)
         free(e->kiss_path[i]);
     free(e->kiss_path);
 
-    for (int i = 0; e->path[i] != NULL; i++)
+    for (int i = 0; e->path && e->path[i] != NULL; i++)
         free(e->path[i]);
     free(e->path);
 

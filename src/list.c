@@ -21,6 +21,7 @@ pkg_print(char *pkg, struct env *e) {
 
     printf("%s %s", pkg, buf);
 
+    free(buf);
     free(p);
     fclose(f);
 }
