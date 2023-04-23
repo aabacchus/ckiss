@@ -26,7 +26,7 @@ struct pkg {
 
 enum pkg_source_types pkg_source_type(char *remote, char *pkg_path);
 
-struct pkg *parse_sources(char *pkg, struct env *e);
+struct pkg *pkg_parse_sources(char *pkg, struct env *e);
 
 void pkg_free(struct pkg *p);
 

@@ -38,7 +38,7 @@ struct env {
 
 /* include these now in case they need struct env */
 #include "array.h"
-#include "source.h"
+#include "pkg.h"
 
 /* called "mylog" to avoid collision with math.h log function. */
 void mylog(const char *s);

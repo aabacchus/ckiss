@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "ckiss.h"
-#include "source.h"
+#include "pkg.h"
 
 /* reads f and returns the checksum */
 static char *
@@ -119,7 +119,7 @@ checksum(int argc, char **argv, struct env *e) {
         die2("checksum", "need a package name(s)"); /* TODO: crux-like */
 
     for (int i = 1; i < argc; i++) {
-        struct pkg *p = parse_sources(argv[i], e);
+        struct pkg *p = pkg_parse_sources(argv[i], e);
         if (p->n_need_checksums == 0) {
             pkg_free(p);
             mylog2(argv[i], "No sources needing checksums");

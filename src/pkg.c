@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include "ckiss.h"
-#include "source.h"
+#include "pkg.h"
 
 /* returns the location of the cache file for the source for pkg, or NULL if not
  * needed (eg git sources or local files in repo) */
@@ -54,7 +54,7 @@ pkg_source_type(char *remote, char *pkg_path) {
 }
 
 struct pkg *
-parse_sources(char *pkg, struct env *e) {
+pkg_parse_sources(char *pkg, struct env *e) {
     struct source **s = NULL;
     char *pkg_path = find_pkg(pkg, e);
     if (pkg_path == NULL)
