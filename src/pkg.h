@@ -30,4 +30,10 @@ struct pkg *pkg_parse_sources(char *pkg, struct env *e);
 
 void pkg_free(struct pkg *p);
 
+/* Wrapper around find_in_path. Name is an exact name, not a glob. Return the
+ * first package in $KISS_PATH:$sys_db, or NULL. */
+char *find_pkg_path(char *name, struct env *e);
+
+FILE *pkg_open_file(char *pkg_path, char *file, char *mode);
+
 #endif

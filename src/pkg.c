@@ -56,7 +56,7 @@ pkg_source_type(char *remote, char *pkg_path) {
 struct pkg *
 pkg_parse_sources(char *pkg, struct env *e) {
     struct source **s = NULL;
-    char *pkg_path = find_pkg(pkg, e);
+    char *pkg_path = find_pkg_path(pkg, e);
     if (pkg_path == NULL)
         die2(pkg, "not found");
 
@@ -134,4 +134,29 @@ pkg_free(struct pkg *p) {
     free(p->s);
     free(p->pkg_path);
     free(p);
+}
+
+char *
+find_pkg_path(char *name, struct env *e) {
+    array_t full_path = arr_copy(e->kiss_path);
+    arr_append(&full_path, e->sys_db, -1, true);
+
+    array_t s = find_in_path(name, full_path, S_IFDIR, true, false);
+    char *pkg = NULL;
+    if (s != NULL)
+        pkg = s[0];
+
+    free(s);
+    arr_free(full_path);
+    return pkg;
+}
+
+FILE *
+pkg_open_file(char *pkg_path, char *file, char *mode) {
+    char *s = concat(pkg_path, "/", file, NULL);
+    FILE *f = fopen(s, mode);
+    if (f == NULL)
+        return NULL;
+    free(s);
+    return f;
 }

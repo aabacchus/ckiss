@@ -170,31 +170,6 @@ available_cmd(array_t path, char *cmd, ...) {
     return -1;
 }
 
-char *
-find_pkg(char *name, struct env *e) {
-    array_t full_path = arr_copy(e->kiss_path);
-    arr_append(&full_path, e->sys_db, -1, true);
-
-    array_t s = find_in_path(name, full_path, S_IFDIR, true, false);
-    char *pkg = NULL;
-    if (s != NULL)
-        pkg = s[0];
-
-    free(s);
-    arr_free(full_path);
-    return pkg;
-}
-
-FILE *
-pkg_open_file(char *pkg_path, char *file, char *mode) {
-    char *s = concat(pkg_path, "/", file, NULL);
-    FILE *f = fopen(s, mode);
-    if (f == NULL)
-        return NULL;
-    free(s);
-    return f;
-}
-
 void
 setup_colors(struct env *e) {
     if (!isatty(1) || e->color == 0) {

@@ -66,12 +66,6 @@ array_t find_in_path(char *name, array_t path, mode_t test_flags, bool limit, bo
  * cmd (0, 1, 2, ...). Arg list must be terminated with a NULL */
 int available_cmd(array_t path, char *cmd, ...);
 
-/* Wrapper around find_in_path. Name is an exact name, not a glob. Return the
- * first package in $KISS_PATH:$sys_db, or NULL. */
-char *find_pkg(char *name, struct env *e);
-
-FILE *pkg_open_file(char *pkg_path, char *file, char *mode);
-
 /* setup internal colours used by the logging functions. */
 void setup_colors(struct env *e);
 
