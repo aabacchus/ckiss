@@ -6,7 +6,9 @@
 #include "ckiss.h"
 #include "source.h"
 
-char *
+/* returns the location of the cache file for the source for pkg, or NULL if not
+ * needed (eg git sources or local files in repo) */
+static char *
 source_get_cache(char *pkg, char *pkg_path, struct source *s, struct env *e) {
     if (s == NULL || s->type == SRC_INVAL)
         die("source struct not initialised");
@@ -51,18 +53,22 @@ pkg_source_type(char *remote, char *pkg_path) {
     die2(remote, "invalid source");
 }
 
-struct source **
-parse_sources(char *pkg, char *pkg_path, struct env *e) {
+struct pkg *
+parse_sources(char *pkg, struct env *e) {
     struct source **s = NULL;
+    char *pkg_path = find_pkg(pkg, e);
+    if (pkg_path == NULL)
+        die2(pkg, "not found");
 
     mylog2(pkg, "Reading sources");
 
     FILE *f = pkg_open_file(pkg_path, "sources", "r");
 
     if (f == NULL) {
+        free(pkg_path);
         if (errno == ENOENT) {
             mylog2(pkg, "no sources file, skipping");
-            goto sources_ret;
+            return NULL;
         } else {
             die2(pkg, "couldn't open sources file");
         }
@@ -71,7 +77,7 @@ parse_sources(char *pkg, char *pkg_path, struct env *e) {
     char *buf = NULL;
     size_t bufn = 0;
     ssize_t n;
-    int lineno = 0;
+    int lineno = 0, needed = 0;
     while ((n = getline(&buf, &bufn, f)) != -1) {
         if (n == 0 || buf[0] == '#' || buf[0] == '\n')
             continue;
@@ -90,19 +96,42 @@ parse_sources(char *pkg, char *pkg_path, struct env *e) {
         new->type = pkg_source_type(new->remote, pkg_path);
         new->cachefile = source_get_cache(pkg, pkg_path, new, e);
 
+        if (new->type == SRC_FILE || new->type == SRC_HTTP)
+            needed++;
+
         /* add new to the list */
-        s = realloc(s, sizeof(struct source *) * (lineno + 1));
+        s = realloc(s, sizeof(struct source *) * lineno);
         if (s == NULL)
             die_perror("realloc");
         s[lineno-1] = new;
-
-        /* add a final NULL */
-        s[lineno] = NULL;
     }
     fclose(f);
     free(buf);
 
-sources_ret:
-    free(pkg_path);
-    return s;
+    struct pkg *p = calloc(1, sizeof(struct pkg));
+    if (p == NULL)
+        die_perror("calloc");
+
+    p->pkg = pkg;
+    p->pkg_path = pkg_path;
+    p->n = lineno;
+    p->n_need_checksums = needed;
+    p->s = s;
+
+    return p;
+}
+
+void
+pkg_free(struct pkg *p) {
+    if (p == NULL)
+        return;
+    for (size_t i = 0; i < p->n; i++) {
+        free(p->s[i]->remote);
+        free(p->s[i]->extract_dir);
+        free(p->s[i]->cachefile);
+        free(p->s[i]);
+    }
+    free(p->s);
+    free(p->pkg_path);
+    free(p);
 }

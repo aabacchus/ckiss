@@ -69,40 +69,42 @@ source_generate_checksum(struct source *s) {
 
 /* returns 1 if all good, 0 if there is a checksum mismatch. */
 int
-verify_checksums(char *pkg, char *pkg_path, struct source **s) {
-    if (s == NULL) {
-        mylog2(pkg, "No sources");
+verify_checksums(struct pkg *p) {
+    if (p == NULL) {
+        mylog("No sources");
         return 1;
     }
 
-    FILE *f = pkg_open_file(pkg_path, "checksums", "r");
+    FILE *f = pkg_open_file(p->pkg_path, "checksums", "r");
     if (f == NULL) {
-        /* TODO check if any sources need sums first */
-        die_perror("no checksums");
+        if (p->n_need_checksums == 0)
+            return 1;
+        else
+            die2(p->pkg, "checksums needed but no checksum file");
     }
 
     char *buf = NULL;
     size_t bufn = 0;
     ssize_t n;
-    for (int i = 0; s[i] != NULL; i++) {
-        if (s[i]->type != SRC_HTTP && s[i]->type != SRC_FILE)
+    for (size_t i = 0; i < p->n; i++) {
+        if (p->s[i]->type != SRC_HTTP && p->s[i]->type != SRC_FILE)
             continue;
 
         if ((n = getline(&buf, &bufn, f)) == -1) {
             free(buf);
             fclose(f);
             perror(NULL);
-            die2(s[i]->remote, "checksums missing");
+            die2(p->s[i]->remote, "checksums missing");
         }
         if (buf[n - 1] == '\n')
             buf[--n] = '\0';
 
-        char *sum = source_generate_checksum(s[i]);
+        char *sum = source_generate_checksum(p->s[i]);
         if (strcmp(buf, sum) != 0) {
             free(sum);
             free(buf);
             fclose(f);
-            mylog2(s[i]->cachefile, "checksum mismatch");
+            mylog2(p->s[i]->cachefile, "checksum mismatch");
             return 0;
         }
         free(sum);
@@ -119,34 +121,32 @@ checksum(int argc, char **argv, struct env *e) {
         die2("checksum", "need a package name(s)"); /* TODO: crux-like */
 
     for (int i = 1; i < argc; i++) {
-        bool needed = false;
-        char *pkg_path = find_pkg(argv[i], e);
-        if (pkg_path == NULL)
-            die2(argv[i], "not found");
+        struct pkg *p = parse_sources(argv[i], e);
+        if (p->n_need_checksums == 0) {
+            pkg_free(p);
+            mylog2(argv[i], "No sources needing checksums");
+            continue;
+        }
 
-        FILE *f = pkg_open_file(pkg_path, "checksums", "w");
+        /* for testing */
+        mylog2(argv[i], verify_checksums(p) ? "checksums good" : "checksums bad");
+
+        FILE *f = pkg_open_file(p->pkg_path, "checksums", "w");
         if (f == NULL)
             die_perror("couldn't open checksums file for writing");
 
-        struct source **s = parse_sources(argv[i], pkg_path, e);
-
-        for (int j = 0; s[j] != NULL; j++) {
-            char *sum = source_generate_checksum(s[j]);
+        for (size_t j = 0; j < p->n; j++) {
+            char *sum = source_generate_checksum(p->s[j]);
             if (sum) {
                 fprintf(f, "%s\n", sum);
                 printf("%s\n", sum);
-                needed = true;
             }
             free(sum);
-
-            free(s[j]->remote);
-            free(s[j]->extract_dir);
-            free(s[j]->cachefile);
-            free(s[j]);
         }
-        free(s);
         fclose(f);
-        mylog2(argv[i], needed ? "Generated checksums" : "No sources needing checksums");
+        pkg_free(p);
+
+        mylog2(argv[i], "Generated checksums");
     }
     return ret;
 }

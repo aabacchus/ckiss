@@ -17,12 +17,18 @@ struct source {
     char *cachefile; /* cache location if file downloaded */
 };
 
-/* returns the location of the cache file for the source for pkg, or NULL if not
- * needed (eg git sources or local files in repo) */
-char *source_get_cache(char *pkg, char *pkg_path, struct source *s, struct env *e);
+struct pkg {
+    char *pkg;
+    char *pkg_path;
+    size_t n;
+    size_t n_need_checksums;
+    struct source **s;
+};
 
 enum pkg_source_types pkg_source_type(char *remote, char *pkg_path);
 
-struct source **parse_sources(char *pkg, char *pkg_path, struct env *e);
+struct pkg *parse_sources(char *pkg, struct env *e);
+
+void pkg_free(struct pkg *p);
 
 #endif
