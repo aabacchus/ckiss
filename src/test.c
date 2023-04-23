@@ -26,11 +26,6 @@ main(int argc, char **argv) {
         printf("%s, ", e->path[i]);
     printf("\n");
 
-    printf("b3:\t");
-    for (int i = 0; e->b3[i] != NULL; i++)
-        printf("%s, ", e->b3[i]);
-    printf("\n");
-
     printf("%s\t%s\n", "compress", e->compress);
     printf("%s\t%s\n", "elf", e->elf);
 

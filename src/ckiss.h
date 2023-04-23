@@ -23,7 +23,6 @@ struct env {
     char	**hooks;
     char	**kiss_path;
     char	**path;
-    char	*b3[5];
     char	*cac_dir;
     char	*compress;
     char	*elf;

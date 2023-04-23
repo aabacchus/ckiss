@@ -274,17 +274,6 @@ setup_env(void) {
         snprintf(e->pid, n, "%d", p);
     }
 
-    switch (available_cmd(e->path, "b3sum", NULL)) {
-        case 0:
-            e->b3[0] = "b3sum";
-            e->b3[1] = "-l";
-            e->b3[2] = "33";
-            e->b3[4] = NULL;
-            break;
-        default:
-            die("b3sum utility not found");
-    }
-
     t = getenv("KISS_COMPRESS");
     e->compress = (t && *t != '\0') ? t : "gz";
 
