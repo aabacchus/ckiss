@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "ckiss.h"
+#include "array.h"
 
 int
 search(int argc, char **argv, struct env *e) {
