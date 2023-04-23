@@ -9,7 +9,7 @@ An implementation of the kiss package manager in C.
 [ ] alternatives
 [ ] build
 [ ] hooks
-[.] checksum
+[x] checksum
 [ ] download
 [ ] install
 [x] list

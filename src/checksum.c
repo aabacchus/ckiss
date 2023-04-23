@@ -126,9 +126,6 @@ checksum(int argc, char **argv, struct env *e) {
             continue;
         }
 
-        /* for testing */
-        mylog2(argv[i], verify_checksums(p) ? "checksums good" : "checksums bad");
-
         FILE *f = pkg_open_file(p->pkg_path, "checksums", "w");
         if (f == NULL)
             die_perror("couldn't open checksums file for writing");
