@@ -4,7 +4,6 @@
 #include "ckiss.h"
 
 enum pkg_source_types {
-    SRC_INVAL = 0,
     SRC_HTTP,
     SRC_GIT,
     SRC_FILE,

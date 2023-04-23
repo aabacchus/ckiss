@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <blake3.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,8 +54,7 @@ file_checksum(FILE *f) {
  * is present (must download first) */
 char *
 source_generate_checksum(struct source *s) {
-    if (s == NULL || s->type == SRC_INVAL)
-        die("source struct not initialised");
+    assert(s);
     if (s->type != SRC_HTTP && s->type != SRC_FILE)
         return NULL; /* checksum not needed */
 
@@ -70,11 +70,7 @@ source_generate_checksum(struct source *s) {
 /* returns 1 if all good, 0 if there is a checksum mismatch. */
 int
 verify_checksums(struct pkg *p) {
-    if (p == NULL) {
-        mylog("No sources");
-        return 1;
-    }
-
+    assert(p);
     FILE *f = pkg_open_file(p->pkg_path, "checksums", "r");
     if (f == NULL) {
         if (p->n_need_checksums == 0)
@@ -82,6 +78,8 @@ verify_checksums(struct pkg *p) {
         else
             die2(p->pkg, "checksums needed but no checksum file");
     }
+
+    assert(p->s);
 
     char *buf = NULL;
     size_t bufn = 0;

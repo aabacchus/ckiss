@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,8 +11,7 @@
  * needed (eg git sources or local files in repo) */
 static char *
 source_get_cache(char *pkg, char *pkg_path, struct source *s, struct env *e) {
-    if (s == NULL || s->type == SRC_INVAL)
-        die("source struct not initialised");
+    assert(s);
 
     switch (s->type) {
         case SRC_HTTP:

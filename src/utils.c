@@ -361,6 +361,8 @@ setup_env(void) {
 
 void
 destroy_env(struct env *e) {
+    if (e == NULL)
+        return;
     for (int i = 0; e->hooks && e->hooks[i] != NULL; i++)
         free(e->hooks[i]);
     free(e->hooks);
