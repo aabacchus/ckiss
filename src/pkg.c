@@ -6,6 +6,7 @@
 
 #include "ckiss.h"
 #include "pkg.h"
+#include "utils.h"
 
 /* returns the location of the cache file for the source for pkg, or NULL if not
  * needed (eg git sources or local files in repo) */

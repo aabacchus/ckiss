@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ckiss.h"
+#include "utils.h"
 
 noreturn void
 usage(int r) {

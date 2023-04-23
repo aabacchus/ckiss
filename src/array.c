@@ -3,6 +3,7 @@
 
 #include "ckiss.h"
 #include "array.h"
+#include "utils.h"
 
 size_t
 arr_len(array_t arr) {

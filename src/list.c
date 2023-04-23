@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ckiss.h"
+#include "utils.h"
 
 void
 pkg_print(char *pkg, struct env *e) {

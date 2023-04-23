@@ -27,11 +27,11 @@ clean:
 
 .PHONY: clean test all
 
-utils.o: ckiss.h array.h
+utils.o: ckiss.h array.h utils.h
 test.o: ckiss.h
-list.o: ckiss.h
-search.o: ckiss.h array.h
-array.o: ckiss.h array.h
-checksum.o: ckiss.h pkg.h
-pkg.o: ckiss.h pkg.h
-main.o: ckiss.h
+list.o: ckiss.h utils.h
+search.o: ckiss.h array.h utils.h
+array.o: ckiss.h array.h utils.h
+checksum.o: ckiss.h pkg.h utils.h
+pkg.o: ckiss.h pkg.h utils.h
+main.o: ckiss.h utils.h

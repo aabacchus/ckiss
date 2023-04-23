@@ -3,6 +3,7 @@
 
 #include "ckiss.h"
 #include "array.h"
+#include "utils.h"
 
 int
 search(int argc, char **argv, struct env *e) {

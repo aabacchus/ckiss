@@ -6,6 +6,7 @@
 
 #include "ckiss.h"
 #include "pkg.h"
+#include "utils.h"
 
 /* reads f and returns the checksum */
 static char *

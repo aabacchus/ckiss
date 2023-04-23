@@ -9,6 +9,7 @@
 
 #include "array.h"
 #include "ckiss.h"
+#include "utils.h"
 
 static char *c1 = "", *c2 = "", *c3 = "";
 
