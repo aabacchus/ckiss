@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -355,4 +356,24 @@ destroy_env(struct env *e) {
     free(e->cac_dir);
     free(e->pid);
     free(e);
+}
+
+int
+run(char *argv[]) {
+    pid_t pid = fork();
+    int stat_loc;
+
+    switch (pid) {
+        case -1:
+            die_perror("fork");
+            return 1;
+        case 0:
+            execvp(argv[0], argv);
+
+            break;
+        default:
+            waitpid(pid, &stat_loc, 0);
+            return WEXITSTATUS(stat_loc);
+    }
+    return 0;
 }

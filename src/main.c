@@ -12,6 +12,7 @@ usage(int r) {
     mylog("checksum     Generate checksums");
     mylog("list         List installed packages");
     mylog("search       Search for packages");
+    mylog("update       Update the repositories");
     mylog("version      Package manager version");
     exit(r);
 }
@@ -33,6 +34,9 @@ main(int argc, char **argv) {
             break;
         case 's':
             ret = search(argc - 1, argv + 1, e);
+            break;
+        case 'u':
+            ret = update(e);
             break;
         case 'v':
             printf("%s\n", KISS_VERSION);

@@ -65,4 +65,5 @@ struct env *setup_env(void);
 /* correctly frees a struct env. */
 void destroy_env(struct env *e);
 
+int run(char *argv[]);
 #endif
