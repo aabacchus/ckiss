@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "ckiss.h"
+
+#include "actions.h"
 #include "utils.h"
+
+#define KISS_VERSION "0.1.0 (compat 5.6.4)"
 
 noreturn void
 usage(int r) {

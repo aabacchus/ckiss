@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ckiss.h"
 #include "array.h"
 #include "utils.h"
 

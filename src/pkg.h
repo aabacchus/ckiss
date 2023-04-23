@@ -1,7 +1,7 @@
 #ifndef _CKISS_SOURCE_H
 #define _CKISS_SOURCE_H
 
-#include "ckiss.h"
+#include "utils.h"
 
 enum pkg_source_types {
     SRC_HTTP,

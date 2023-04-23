@@ -6,9 +6,9 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "array.h"
-#include "ckiss.h"
 #include "utils.h"
 
 static char *c1 = "", *c2 = "", *c3 = "";
