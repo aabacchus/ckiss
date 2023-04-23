@@ -17,6 +17,7 @@ arr_len(array_t arr) {
     return n;
 }
 
+// TODO create if arr == NULL
 array_t
 arr_append(array_t *arr, char *s, int n, bool dup) {
     if (n < 0) {
@@ -62,14 +63,19 @@ split(char *s, char *sep) {
     if (s == NULL)
         return NULL;
 
+    /* avoid modifying original string */
+    char *ss = strdup(s);
+
     array_t res = NULL;
-    char *p = strtok(s, sep);
+    char *p = strtok(ss, sep);
     int n = 0;
 
     while (p) {
         arr_append(&res, p, n++, true);
         p = strtok(NULL, sep);
     }
+
+    free(ss);
 
     return res;
 }
