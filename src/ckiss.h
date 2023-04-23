@@ -79,8 +79,8 @@ void destroy_env(struct env *e);
  * is present (must download first) */
 char *source_generate_checksum(struct source *s);
 
-/* returns 1 if all good, 0 if there is a checksum mismatch. */
-int verify_checksums(struct pkg *p);
+/* dies if there is a checksum mismatch. */
+void verify_checksums(struct pkg *p);
 
 int list(int argc, char **argv, struct env *e);
 int search(int argc, char **argv, struct env *e);

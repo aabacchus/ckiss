@@ -67,14 +67,14 @@ source_generate_checksum(struct source *s) {
     return c;
 }
 
-/* returns 1 if all good, 0 if there is a checksum mismatch. */
-int
+/* dies if there is a checksum mismatch. */
+void
 verify_checksums(struct pkg *p) {
     assert(p);
     FILE *f = pkg_open_file(p->pkg_path, "checksums", "r");
     if (f == NULL) {
         if (p->n_need_checksums == 0)
-            return 1;
+            return;
         else
             die2(p->pkg, "checksums needed but no checksum file");
     }
@@ -102,14 +102,12 @@ verify_checksums(struct pkg *p) {
             free(sum);
             free(buf);
             fclose(f);
-            mylog2(p->s[i]->cachefile, "checksum mismatch");
-            return 0;
+            die2(p->s[i]->cachefile, "checksum mismatch");
         }
         free(sum);
     }
     free(buf);
     fclose(f);
-    return 1;
 }
 
 int
@@ -120,7 +118,7 @@ checksum(int argc, char **argv, struct env *e) {
 
     for (int i = 1; i < argc; i++) {
         struct pkg *p = pkg_parse_sources(argv[i], e);
-        if (p->n_need_checksums == 0) {
+        if (p == NULL || p->n_need_checksums == 0) {
             pkg_free(p);
             mylog2(argv[i], "No sources needing checksums");
             continue;
