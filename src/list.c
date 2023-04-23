@@ -29,7 +29,8 @@ pkg_print(char *pkg, struct env *e) {
 /* exclude .* from package listing */
 static int
 sel(const struct dirent *d) {
-    return d->d_name[0] != '.';
+    struct dirent *e = (struct dirent *)d;
+    return e->d_name[0] != '.';
 }
 
 int
