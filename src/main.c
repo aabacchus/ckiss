@@ -14,6 +14,7 @@ usage(int r) {
 
 int
 main(int argc, char **argv) {
+    int ret = 0;
     struct env *e = setup_env();
     setup_colors(e);
 
@@ -21,13 +22,13 @@ main(int argc, char **argv) {
 
     switch (argv[1][0]) {
         case 'c':
-            checksum(argc - 1, argv + 1, e);
+            ret = checksum(argc - 1, argv + 1, e);
             break;
         case 'l':
-            list(argc - 1, argv + 1, e);
+            ret = list(argc - 1, argv + 1, e);
             break;
         case 's':
-            search(argc - 1, argv + 1, e);
+            ret = search(argc - 1, argv + 1, e);
             break;
         case 'v':
             printf("%s\n", KISS_VERSION);
@@ -37,5 +38,5 @@ main(int argc, char **argv) {
             usage(1);
     }
     destroy_env(e);
-    return 0;
+    return ret;
 }
