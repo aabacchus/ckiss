@@ -2,12 +2,13 @@
 
 XCFLAGS = $(CFLAGS) -Wall -Wextra -Wshadow -pedantic -D_XOPEN_SOURCE=700 -Og -g
 
-OBJS = utils.o list.o search.o array.o
+OBJS = utils.o list.o search.o array.o checksum.o source.o
+LIBS = -lblake3
 
 all: ckiss
 
 ckiss: main.o libckiss.a
-	$(CC) $(LDFLAGS) main.o libckiss.a -o $@
+	$(CC) -o $@ $(LDFLAGS) main.o libckiss.a $(LIBS)
 
 libckiss.a: $(OBJS)
 	$(AR) -rcs $@ $(OBJS)
@@ -31,4 +32,6 @@ test.o: ckiss.h
 list.o: ckiss.h
 search.o: ckiss.h array.h
 array.o: ckiss.h array.h
+checksum.o: ckiss.h source.h
+source.o: ckiss.h source.h
 main.o: ckiss.h

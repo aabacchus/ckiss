@@ -3,11 +3,10 @@
 
 #include <limits.h>
 #include <stdbool.h>
-#include <unistd.h>
+#include <stdio.h>
 #include <stdnoreturn.h>
 #include <sys/stat.h>
-
-#include "array.h"
+#include <unistd.h>
 
 #ifndef noreturn
 #define noreturn
@@ -25,6 +24,7 @@ struct env {
     char	**kiss_path;
     char	**path;
     char	*b3[5];
+    char	*cac_dir;
     char	*compress;
     char	*elf;
     char	*get[7];
@@ -36,6 +36,10 @@ struct env {
     char	*tmpdir;
     char	date[17]; /* YYYY-MM-DD-HH:MM + '\0' */
 };
+
+/* include these now in case they need struct env */
+#include "array.h"
+#include "source.h"
 
 /* called "mylog" to avoid collision with math.h log function. */
 void mylog(const char *s);
@@ -63,6 +67,12 @@ array_t find_in_path(char *name, array_t path, mode_t test_flags, bool limit, bo
  * cmd (0, 1, 2, ...). Arg list must be terminated with a NULL */
 int available_cmd(array_t path, char *cmd, ...);
 
+/* Wrapper around find_in_path. Name is an exact name, not a glob. Return the
+ * first package in $KISS_PATH:$sys_db, or NULL. */
+char *find_pkg(char *name, struct env *e);
+
+FILE *pkg_open_file(char *pkg_path, char *file, char *mode);
+
 /* setup internal colours used by the logging functions. */
 void setup_colors(struct env *e);
 
@@ -72,8 +82,15 @@ struct env *setup_env(void);
 /* correctly frees a struct env. */
 void destroy_env(struct env *e);
 
+/* returns the checksum of the file specified by s, if needed and if the cache
+ * is present (must download first) */
+char *source_generate_checksum(struct source *s);
+
+/* returns 1 if all good, 0 if there is a checksum mismatch. */
+int verify_checksums(char *pkg, char *pkg_path, struct source **s);
 
 int list(int argc, char **argv, struct env *e);
 int search(int argc, char **argv, struct env *e);
+int checksum(int argc, char **argv, struct env *e);
 
 #endif

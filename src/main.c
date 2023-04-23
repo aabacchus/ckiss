@@ -4,7 +4,8 @@
 
 noreturn void
 usage(int r) {
-    mylog("ckiss [l|s|v] [pkg]...");
+    mylog("ckiss [c|l|s|v] [pkg]...");
+    mylog("checksum     Generate checksums");
     mylog("list         List installed packages");
     mylog("search       Search for packages");
     mylog("version      Package manager version");
@@ -19,6 +20,9 @@ main(int argc, char **argv) {
     if (argc < 2) usage(0);
 
     switch (argv[1][0]) {
+        case 'c':
+            checksum(argc - 1, argv + 1, e);
+            break;
         case 'l':
             list(argc - 1, argv + 1, e);
             break;

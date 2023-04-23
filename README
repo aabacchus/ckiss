@@ -9,7 +9,7 @@ An implementation of the kiss package manager in C.
 [ ] alternatives
 [ ] build
 [ ] hooks
-[ ] checksum
+[.] checksum
 [ ] download
 [ ] install
 [x] list
@@ -19,3 +19,7 @@ An implementation of the kiss package manager in C.
 [ ] upgrade
 [x] version
 [ ] external tools
+
+## Dependencies
+
+BLAKE3 library (https://git.sr.ht/~mcf/b3sum)
