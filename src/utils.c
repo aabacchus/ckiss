@@ -360,6 +360,13 @@ destroy_env(struct env *e) {
 
 int
 run(char *argv[]) {
+    char *sep = "";
+    for (int i = 0; argv[i] != NULL; i++) {
+        fprintf(stderr, "%s%s", sep, argv[i]);
+        sep = " ";
+    }
+    fprintf(stderr, "\n");
+
     pid_t pid = fork();
     int stat_loc;
 
