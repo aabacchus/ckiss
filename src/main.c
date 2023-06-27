@@ -10,6 +10,7 @@ noreturn void
 usage(int r) {
     mylog("ckiss [c|l|s|v] [pkg]...");
     mylog("checksum     Generate checksums");
+    mylog("download     Download sources");
     mylog("list         List installed packages");
     mylog("search       Search for packages");
     mylog("update       Update the repositories");
@@ -28,6 +29,9 @@ main(int argc, char **argv) {
     switch (argv[1][0]) {
         case 'c':
             ret = checksum(argc - 1, argv + 1, e);
+            break;
+        case 'd':
+            ret = download(argc - 1, argv + 1, e);
             break;
         case 'l':
             ret = list(argc - 1, argv + 1, e);

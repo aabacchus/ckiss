@@ -6,4 +6,5 @@ int list(int argc, char **argv, struct env *e);
 int search(int argc, char **argv, struct env *e);
 int checksum(int argc, char **argv, struct env *e);
 int update(struct env *e);
+int download(int argc, char **argv, struct env *e);
 #endif
